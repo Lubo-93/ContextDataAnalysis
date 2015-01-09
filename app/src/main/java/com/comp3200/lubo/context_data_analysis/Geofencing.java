@@ -56,7 +56,7 @@ public class Geofencing extends ActionBarActivity {
     private double mWorkLng;
     private float mWorkRad;
     // Tag for logs
-    private static final String TAG = "Geofencing";
+    private static final String APPTAG = "Geofencing";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -194,7 +194,7 @@ public class Geofencing extends ActionBarActivity {
                 mWorkLat = mConvertedWorkAddress.get(0).getLatitude();
                 mWorkLng = mConvertedWorkAddress.get(0).getLongitude();
             }catch (Exception e){
-                Log.e(TAG, "AddressConversionError", e);
+                Log.e(APPTAG, "AddressConversionError", e);
             }
             return null;
         }
