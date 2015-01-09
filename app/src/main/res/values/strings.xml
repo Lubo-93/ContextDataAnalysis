@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <string name="app_name">Context Data Analysiss</string>
+    <!-- activity names -->
+    <string name="title_activity_location_updates">LocationUpdates</string>
+    <string name="title_activity_geofencing">Geofencing</string>
+    <!-- button names -->
+    <string name="location_updates_btn">Location Updates</string>
+    <string name="geofencing_btn">Geofencing</string>
+    <string name="add_geofences_btn">Add Geofences</string>
+    <string name="clear_geofences_btn">Clear Geofences</string>
+    <!-- labels -->
+    <string name="current_location">Location:</string>
+    <string name="time">Time:</string>
+    <string name="weather">Weather:</string>
+    <string name="home_address">Home address:</string>
+    <string name="work_address">Work address:</string>
+    <string name="existing_geofences">Exisitng Geofences</string>
+    <string name="home_geofence">Home Geofence</string>
+    <string name="work_geofence">Work Geofence</string>
+    <string name="geofence_id">Id:</string>
+    <string name="geofence_lat">Latitude:</string>
+    <string name="geofence_lng">Longitude:</string>
+    <string name="geofence_rad">Radius:</string>
+    <!-- messages -->
+    <string name="add_geofences_result_success"> Add Geofences: Success GeofenceRequestIds=%1$s</string>
+    <string name="action_settings">Settings</string>
+    <string name="title_activity_geofencing2">Geofencing2</string>
+    <string name="hello_world">Hello world!</string>
+
+
+</resources>
