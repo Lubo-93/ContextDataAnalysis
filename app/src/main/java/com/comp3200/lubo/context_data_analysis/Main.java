@@ -9,7 +9,6 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.GooglePlayServicesClient;
@@ -31,40 +30,47 @@ public class Main extends ActionBarActivity implements
         GooglePlayServicesClient.ConnectionCallbacks,
         GooglePlayServicesClient.OnConnectionFailedListener {
 
-    // Global parameters
     // Base URL for REST calls to the Weather API
     private static String BASE_URL = "http://api.wunderground.com/api/";
     // Key needed to access the Weather API
     private static String API_KEY = "292e0ed8aab9e924/";
     // URL for weather condition query
     private static String CONDITIONS_QUERY = "conditions/q/";
-    // Global variables
-    LocationClient mLocationClient;
-    Location mCurrentLocation;
-
-    Calendar calendar;
-
-    // Apache HttpClient and Response for Weather API REST call
-    HttpClient mHttpClient;
-    HttpResponse mHttpResponse;
-
-    TextView mWeatherText;
+    // An instance of Location Client
+    private LocationClient mLocationClient;
+    // Holds the current location
+    private Location mCurrentLocation;
+    // An instance of calendar used to get the current time
+    private Calendar mCalendar;
+    // Apache HttpClient and Response for Weather API REST calls
+    private HttpClient mHttpClient;
+    private HttpResponse mHttpResponse;
+    // An instance of the custom logger
+    private Logger mLog;
+    // Handle to the label the displays the weather information in the UI
+    private TextView mWeatherText;
+    // Handle to the label that display the current time in the UI
+    private TextView mTimeText;
+    // Tag for logs
+    private final String APPTAG = "MainActivity";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-        TextView mTimeText = (TextView) findViewById(R.id.time);
-
         // Instantiate the LocationClient
         mLocationClient = new LocationClient(this, this, this);
         mLocationClient.connect();
         // Instantiate the HttpClient
         mHttpClient = new DefaultHttpClient();
+        // Instantiate the logger
+        mLog = new Logger(this);
         // Get an instance of the locale calendar
-        calendar = Calendar.getInstance();
+        mCalendar = Calendar.getInstance();
+        // Get the handles to the editor fields in the UI
+        mTimeText = (TextView) findViewById(R.id.time);
         // Display the current time in the UI
-        mTimeText.setText(calendar.getTime().toString());
+        mTimeText.setText(mCalendar.getTime().toString());
     }
 
     // Called when the user clicks to get location updates
@@ -81,7 +87,12 @@ public class Main extends ActionBarActivity implements
         startActivity(intent);
     }
 
-
+    // Called when the user clicks on the Log button
+    public void getLog(View view) {
+        // Intent to start Log activity
+        Intent intent = new Intent(this, Log.class);
+        startActivity(intent);
+    }
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
@@ -107,8 +118,9 @@ public class Main extends ActionBarActivity implements
 
     @Override
     public void onConnected(Bundle bundle) {
-        // Display the connection status
-        Toast.makeText(this, "Connected", Toast.LENGTH_SHORT).show();
+        // Log the connection status
+        Message mStatus = new Message(APPTAG, "Location client connected");
+        mLog.addMessage(mStatus);
         TextView mLocationText = (TextView) findViewById(R.id.current_location);
         mWeatherText = (TextView) findViewById(R.id.weather);
         // Get the last known location's latitude and longitude
@@ -126,14 +138,16 @@ public class Main extends ActionBarActivity implements
 
     @Override
     public void onDisconnected() {
-        // Display the connection status
-        Toast.makeText(this, "Disconnected", Toast.LENGTH_SHORT).show();
+        // Log the connection status
+        Message mStatus = new Message(APPTAG, "Location client disconnected");
+        mLog.addMessage(mStatus);
     }
 
     @Override
     public void onConnectionFailed(ConnectionResult connectionResult) {
-        // Display the connection status
-        Toast.makeText(this, "Connection failed", Toast.LENGTH_SHORT).show();
+        // Log the connection status
+        Message mStatus = new Message(APPTAG, "Location client failed to connect");
+        mLog.addMessage(mStatus);
     }
 
     class RequestWeather extends AsyncTask<String, String, String> {
@@ -176,6 +190,9 @@ public class Main extends ActionBarActivity implements
         @Override
         protected void onPostExecute(String result) {
             mWeatherText.setText(result);
+            // Log the success
+            Message mSuccess = new Message(APPTAG, "Weather information retrieved successfully");
+            mLog.addMessage(mSuccess);
         }
     }
 }

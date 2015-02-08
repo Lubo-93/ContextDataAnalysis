@@ -29,12 +29,6 @@ import java.util.List;
  */
 public class ReceiveTransitionsIntentService extends IntentService {
 
-    // Intent category for geofence transitions
-    private final String CATEGORY_GEOFENCE_TRANSITIONS = "com.lubo.3200.context_data_analysis.GEOFENCE_TRANSTIONS";
-    // Geofence error
-    private final String ACTION_GEOFENCE_ERROR = "com.lubo.3200.context_data_analysis.ACTION_GEOFENCE_ERROR";
-    // Intent extra geofence status
-    private final String EXTRA_GEOFENCE_STATUS = "com.lubo.3200.context_data_analysis.EXTRA_GEOFENCE_STATUS";
     // Tag for logs
     private final String APPTAG = "ReceiveTransitionsIntentService";
 
@@ -50,10 +44,9 @@ public class ReceiveTransitionsIntentService extends IntentService {
      */
     @Override
     protected void onHandleIntent(Intent intent) {
-        // Create a local broadcast Intent
+        // Create a local broadcast Intent and set its category
         Intent broadcastIntent = new Intent();
-        // Give it the category for geofence transitions
-        broadcastIntent.addCategory(CATEGORY_GEOFENCE_TRANSITIONS);
+        broadcastIntent.addCategory(GeofenceUtils.CATEGORY_CONTEXT_ANALYSIS);
         // First check for errors
         if (LocationClient.hasError(intent)) {
             // Get the error code
@@ -61,7 +54,7 @@ public class ReceiveTransitionsIntentService extends IntentService {
             // Log the error
             Log.e(APPTAG, String.valueOf(errorCode));
             // Set the action and error message for the broadcast intent
-            broadcastIntent.setAction(ACTION_GEOFENCE_ERROR).putExtra(EXTRA_GEOFENCE_STATUS, errorCode);
+            broadcastIntent.setAction(GeofenceUtils.ACTION_GEOFENCE_ERROR).putExtra(GeofenceUtils.EXTRA_GEOFENCE_STATUS, errorCode);
             // Broadcast the error *locally* to other components in this app
             LocalBroadcastManager.getInstance(this).sendBroadcast(broadcastIntent);
             // If there's no error, get the transition type and create a notification

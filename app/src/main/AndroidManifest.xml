@@ -31,6 +31,10 @@
             android:name="com.comp3200.lubo.context_data_analysis.Geofencing"
             android:label="@string/title_activity_geofencing" >
         </activity>
+        <activity
+            android:name="com.comp3200.lubo.context_data_analysis.Log"
+            android:label="@string/title_activity_log" >
+        </activity>
     </application>
 
 </manifest>

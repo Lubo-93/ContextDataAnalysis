@@ -41,6 +41,8 @@ public class LocationUpdates extends ActionBarActivity  implements
     // Holds accuracy and frequency parameters
     LocationRequest mLocationRequest;
 
+    private Logger log;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -56,6 +58,8 @@ public class LocationUpdates extends ActionBarActivity  implements
         mLocationRequest.setInterval(UPDATE_INTERVAL);
         // Set the fastest update interval to 1 second
         mLocationRequest.setFastestInterval(FASTEST_INTERVAL);
+
+        log = new Logger(this);
     }
 
 
