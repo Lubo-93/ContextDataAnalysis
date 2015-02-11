@@ -15,6 +15,8 @@
     <string name="unmonitor_work_geofence_btn">Unominitor Work Geofence</string>
     <string name="unmonitor_geofences_all_btn">Unmonitor Geofences</string>
     <string name="log_btn">Log</string>
+    <string name="activity_scan_on_btn">Start Activity Recognition</string>
+    <string name="activity_scan_off_btn">Stop</string>
     <!-- labels -->
     <string name="current_location">Location:</string>
     <string name="time">Time:</string>

@@ -13,7 +13,6 @@ import android.support.v4.app.NotificationCompat;
 import android.support.v4.app.TaskStackBuilder;
 import android.support.v4.content.LocalBroadcastManager;
 import android.text.TextUtils;
-import android.util.Log;
 
 import com.google.android.gms.location.Geofence;
 import com.google.android.gms.location.LocationClient;
@@ -31,10 +30,14 @@ public class ReceiveTransitionsIntentService extends IntentService {
 
     // Tag for logs
     private final String APPTAG = "ReceiveTransitionsIntentService";
+    // Instance of the logger class
+    private Logger log;
+
 
     // Sets an identifier for this class' background thread
     public ReceiveTransitionsIntentService() {
         super("ReceiveTransitionsIntentService");
+
     }
 
     /**
@@ -44,6 +47,8 @@ public class ReceiveTransitionsIntentService extends IntentService {
      */
     @Override
     protected void onHandleIntent(Intent intent) {
+        // Instantiate the logger
+        log = new Logger(this);
         // Create a local broadcast Intent and set its category
         Intent broadcastIntent = new Intent();
         broadcastIntent.addCategory(GeofenceUtils.CATEGORY_CONTEXT_ANALYSIS);
@@ -52,7 +57,8 @@ public class ReceiveTransitionsIntentService extends IntentService {
             // Get the error code
             int errorCode = LocationClient.getErrorCode(intent);
             // Log the error
-            Log.e(APPTAG, String.valueOf(errorCode));
+            Message status = new Message(APPTAG, String.valueOf(errorCode));
+            log.addMessage(status);
             // Set the action and error message for the broadcast intent
             broadcastIntent.setAction(GeofenceUtils.ACTION_GEOFENCE_ERROR).putExtra(GeofenceUtils.EXTRA_GEOFENCE_STATUS, errorCode);
             // Broadcast the error *locally* to other components in this app
@@ -75,13 +81,17 @@ public class ReceiveTransitionsIntentService extends IntentService {
                 sendNotification(transitionType, ids);
 
                 // Log the transition type and a message
-                Log.d(APPTAG, getString(R.string.geofence_transition_notification_title, transitionType, ids));
-                Log.d(APPTAG, getString(R.string.geofence_transition_notification_text));
+                Message status = new Message(APPTAG, getString(R.string.geofence_transition_notification_title, transitionType, ids));
+                log.addMessage(status);
+                status = new Message(APPTAG, getString(R.string.geofence_transition_notification_text));
+                log.addMessage(status);
 
                 // An invalid transition was reported
             } else {
                 // Always log as an error
-                Log.e(APPTAG, getString(R.string.geofence_transition_invalid_type, transition));
+                Message status = new Message(APPTAG, getString(R.string.geofence_transition_invalid_type, transition));
+                log.addMessage(status);
+
             }
         }
     }

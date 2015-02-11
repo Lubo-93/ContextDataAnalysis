@@ -7,7 +7,6 @@ import android.content.Intent;
 import android.content.IntentSender;
 import android.os.Bundle;
 import android.support.v4.content.LocalBroadcastManager;
-import android.util.Log;
 
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.GooglePlayServicesClient;
@@ -46,6 +45,8 @@ public class GeofenceRemover implements
     private boolean mInProgress;
     // Tag for logging
     private final String APPTAG = "GeofenceRemover";
+    // Logger
+    private Logger mLog;
 
     // Construct a GeofenceRemover for the current Context
     public GeofenceRemover(Context context) {
@@ -55,6 +56,8 @@ public class GeofenceRemover implements
         mCurrentGeofenceIds = null;
         mLocationClient = null;
         mInProgress = false;
+        // Instantiate the logger
+        mLog = new Logger(mContext);
     }
 
     // Set the "in progress" flag from a caller. This allows callers to re-set a request that failed but was later fixed.
@@ -149,15 +152,17 @@ public class GeofenceRemover implements
         Intent broadcastIntent = new Intent();
         // If removing the geofences was successful
         if (statusCode == LocationStatusCodes.SUCCESS) {
-            // In debug mode, log the result
-            Log.d(APPTAG, mContext.getString(R.string.remove_geofences_intent_success));
+            // Log the result
+            Message status = new Message(APPTAG, mContext.getString(R.string.remove_geofences_intent_success));
+            mLog.addMessage(status);
             // Set the action and add the result message
             broadcastIntent.setAction(GeofenceUtils.ACTION_GEOFENCES_REMOVED);
             broadcastIntent.putExtra(GeofenceUtils.EXTRA_GEOFENCE_STATUS, mContext.getString(R.string.remove_geofences_intent_success));
             // If removing the geocodes failed
         } else {
             // Always log the error
-            Log.e(APPTAG, mContext.getString(R.string.remove_geofences_intent_failure, statusCode));
+            Message status = new Message(APPTAG, mContext.getString(R.string.remove_geofences_intent_failure, statusCode));
+            mLog.addMessage(status);
             // Set the action and add the result message
             broadcastIntent.setAction(GeofenceUtils.ACTION_GEOFENCE_ERROR);
             broadcastIntent.putExtra(GeofenceUtils.EXTRA_GEOFENCE_STATUS, mContext.getString(R.string.remove_geofences_intent_failure, statusCode));
@@ -179,8 +184,9 @@ public class GeofenceRemover implements
         if (LocationStatusCodes.SUCCESS == statusCode) {
             // Create a message containing all the geofence IDs removed.
             msg = mContext.getString(R.string.remove_geofences_id_success, Arrays.toString(geofenceRequestIds));
-            // In debug mode, log the result
-            Log.d(APPTAG, msg);
+            // Log the result
+            Message status = new Message(APPTAG, msg);
+            mLog.addMessage(status);
             // Create an Intent to broadcast to the app
             broadcastIntent.setAction(GeofenceUtils.ACTION_GEOFENCES_REMOVED).addCategory(GeofenceUtils.CATEGORY_CONTEXT_ANALYSIS)
                                                                                .putExtra(GeofenceUtils.EXTRA_GEOFENCE_STATUS, msg);
@@ -192,7 +198,8 @@ public class GeofenceRemover implements
                                       Arrays.toString(geofenceRequestIds)
             );
             // Log an error
-            Log.e(APPTAG, msg);
+            Message status = new Message(APPTAG, msg);
+            mLog.addMessage(status);
             // Create an Intent to broadcast to the app
             broadcastIntent.setAction(GeofenceUtils.ACTION_GEOFENCE_ERROR).addCategory(GeofenceUtils.CATEGORY_CONTEXT_ANALYSIS)
                                                                              .putExtra(GeofenceUtils.EXTRA_GEOFENCE_STATUS, msg);
@@ -222,8 +229,9 @@ public class GeofenceRemover implements
     // Once the location client is connected, remove the requested geofences
     @Override
     public void onConnected(Bundle arg0) {
-        // If debugging, log the connection
-        Log.d(APPTAG, mContext.getString(R.string.connected));
+        // Log the connection
+        Message status = new Message(APPTAG, mContext.getString(R.string.connected));
+        mLog.addMessage(status);
         // Continue the request to remove the geofences
         continueRemoveGeofences();
     }
@@ -232,8 +240,9 @@ public class GeofenceRemover implements
     public void onDisconnected() {
         // A request is no longer in progress
         mInProgress = false;
-        // In debug mode, log the disconnection
-        Log.d(APPTAG, mContext.getString(R.string.disconnected));
+        // Log the disconnection
+        Message status = new Message(APPTAG, mContext.getString(R.string.disconnected));
+        mLog.addMessage(status);
         // Destroy the current location client
         mLocationClient = null;
     }

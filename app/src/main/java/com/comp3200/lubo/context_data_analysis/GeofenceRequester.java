@@ -10,7 +10,6 @@ import android.content.Intent;
 import android.content.IntentSender;
 import android.os.Bundle;
 import android.support.v4.content.LocalBroadcastManager;
-import android.util.Log;
 
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.GooglePlayServicesClient;
@@ -47,6 +46,8 @@ public class GeofenceRequester implements
     private boolean mInProgress;
     // Tag for logs
     private final String APPTAG = "GeofenceRequester";
+    // Logger
+    private Logger mLog;
 
     public GeofenceRequester(Activity activityContext) {
         // Save the context
@@ -55,6 +56,7 @@ public class GeofenceRequester implements
         mGeofencePendingIntent = null;
         mLocationClient = null;
         mInProgress = false;
+        mLog = new Logger(mActivity);
     }
 
 
@@ -123,8 +125,9 @@ public class GeofenceRequester implements
         if (LocationStatusCodes.SUCCESS == statusCode) {
             // Create a message containing all the geofence IDs added.
             msg = mActivity.getString(R.string.add_geofences_result_success, Arrays.toString(geofenceRequestIds));
-            // In debug mode, log the result
-            Log.d(APPTAG, msg);
+            // Log the result
+            Message status = new Message(APPTAG, msg);
+            mLog.addMessage(status);
             // Create an Intent to broadcast to the app
             broadcastIntent.setAction(GeofenceUtils.ACTION_GEOFENCES_ADDED)
                     .addCategory(GeofenceUtils.CATEGORY_CONTEXT_ANALYSIS)
@@ -136,7 +139,8 @@ public class GeofenceRequester implements
                                          Arrays.toString(geofenceRequestIds)
             );
             // Log an error
-            Log.e(APPTAG, msg);
+            Message status = new Message(APPTAG, msg);
+            mLog.addMessage(status);
             // Create an Intent to broadcast to the app
             broadcastIntent.setAction(GeofenceUtils.ACTION_GEOFENCE_ERROR).addCategory(GeofenceUtils.CATEGORY_CONTEXT_ANALYSIS)
                                                                            .putExtra(GeofenceUtils.EXTRA_GEOFENCE_STATUS, msg);
@@ -159,8 +163,9 @@ public class GeofenceRequester implements
     // Once the location client is connected, add the requested geofences.
     @Override
     public void onConnected(Bundle arg0) {
-        // If debugging, log the connection
-        Log.d(APPTAG, mActivity.getString(R.string.connected));
+        // Log the connection
+        Message status = new Message(APPTAG, mActivity.getString(R.string.connected));
+        mLog.addMessage(status);
         continueAddGeofences();
     }
 
@@ -168,8 +173,9 @@ public class GeofenceRequester implements
     public void onDisconnected() {
         // Turn off the request flag
         mInProgress = false;
-        // In debug mode, log the disconnection
-        Log.d(APPTAG, mActivity.getString(R.string.disconnected));
+        // Log the disconnection
+        Message status = new Message(APPTAG, mActivity.getString(R.string.disconnected));
+        mLog.addMessage(status);
         // Destroy the current location client
         mLocationClient = null;
     }
