@@ -10,6 +10,7 @@ import android.content.Intent;
 import android.content.IntentSender;
 import android.os.Bundle;
 import android.support.v4.content.LocalBroadcastManager;
+import android.util.Log;
 
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.GooglePlayServicesClient;
@@ -220,15 +221,23 @@ public class GeofenceRequester implements
          * start a Google Play services activity that can resolve
          * error.
          */
+        Message status;
         if (connectionResult.hasResolution()) {
             try {
                 // Start an Activity that tries to resolve the error
                 connectionResult.startResolutionForResult(mActivity, GeofenceUtils.CONNECTION_FAILURE_RESOLUTION_REQUEST);
+                status = new Message(APPTAG, "Connection error. Attempting resolution");
+                mLog.addMessage(status);
             // Thrown if Google Play services canceled the original PendingIntent
             } catch (IntentSender.SendIntentException e) {
                 // Log the error
-                e.printStackTrace();
+                String error = Log.getStackTraceString(e);
+                Log.d(APPTAG, error);
+                status = new Message(APPTAG, "Connection error could not be resolved");
+                status.setExtra(error);
+                mLog.addMessage(status);
             }
+
         /*
          * If no resolution is available, put the error code in an error Intent
          * and broadcast it back to the main Activity.

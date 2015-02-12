@@ -18,6 +18,10 @@
             android:name=".ReceiveTransitionsIntentService"
             android:exported="false" >
         </service>
+        <service
+            android:name=".ActivityRecognitionService"
+            android:exported="false">
+        </service>
         <activity
             android:name="com.comp3200.lubo.context_data_analysis.Main"
             android:label="@string/app_name" >

@@ -51,6 +51,8 @@ public class Main extends ActionBarActivity implements
     private TextView mWeatherText;
     // Handle to the label that display the current time in the UI
     private TextView mTimeText;
+    // Activity recognition scanner
+    private ActivityRecognitionScan scanner;
     // Tag for logs
     private final String APPTAG = "MainActivity";
 
@@ -71,6 +73,8 @@ public class Main extends ActionBarActivity implements
         mTimeText = (TextView) findViewById(R.id.time);
         // Display the current time in the UI
         mTimeText.setText(mCalendar.getTime().toString());
+        // Instantiate the scanner
+        scanner = new ActivityRecognitionScan(this);
     }
 
     // Called when the user clicks to get location updates
@@ -92,6 +96,16 @@ public class Main extends ActionBarActivity implements
         // Intent to start Log activity
         Intent intent = new Intent(this, Log.class);
         startActivity(intent);
+    }
+
+    // Called when the user requests activity scanning
+    public void startActivityScan(View view) {
+        scanner.startActivityRecognitionScan();
+    }
+
+    // Called when the user requests to stop activity scanning
+    public void stopActivityScan(View view) {
+        scanner.stopActivityRecognitionScan();
     }
 
     @Override
